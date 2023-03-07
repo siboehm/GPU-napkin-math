@@ -32,7 +32,7 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 
 ### Memory
 
-| Device               | Latency | Throughput for sequential access | 1MB  | 1GB  | Example device  |
+| Device               | Latency | Throughput (sequential access)   | 1MB  | 1GB  | Example device  |
 |----------------------|---------|----------------------------------|------|------|-----------------|
 | CPU RAM to Register  |         | 35 GB/s [^sirupsenNapkin]        | 30μs | 30ms |                 |
 | GPU GMEM to Register |         | 700 GB/s                         |      |      | A6000, RTX 3090 |
