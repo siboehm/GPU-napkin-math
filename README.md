@@ -32,11 +32,11 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 
 ### Memory
 
-| Device               | Latency | Throughput (sequential access)   | 1MB  | 1GB  | Example device  |
-|----------------------|---------|----------------------------------|------|------|-----------------|
-| CPU RAM to Register  |         | 35 GB/s [^sirupsenNapkin]        | 30μs | 30ms |                 |
-| GPU GMEM to Register |         | 700 GB/s                         |      |      | A6000, RTX 3090 |
-| GPU GMEM to Register |         | 2 TB/s                           |      |      | A100 SXM        |
+| Device               | Latency | Throughput (sequential access) | 1MB  | 1GB  | Example device  |
+|----------------------|---------|--------------------------------|------|------|-----------------|
+| CPU RAM to Register  |         | 35 GB/s [^sirupsenNapkin]      | 30μs | 30ms |                 |
+| GPU GMEM to Register |         | 700 GB/s                       |      |      | A6000, RTX 3090 |
+| GPU GMEM to Register |         | 2 TB/s                         |      |      | A100 SXM        |
 
 ### Interconnect
 
@@ -51,8 +51,9 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 | GPU to GPU (remote node) | GPUDirect RDMA             | ?       | ?                        | ?         | ?     |              |
 
 ### MPI
-| Operation        | Latency (8B)   | Latency (theoretical)                 | Bandwidth (theoretical)         |
-|------------------|----------------|---------------------------------------|---------------------------------|
+
+| Operation        | Latency (8B)                   | Latency (theoretical)                 | Bandwidth (theoretical)         |
+|------------------|--------------------------------|---------------------------------------|---------------------------------|
 | AllReduce (NCCL) | 200μs over Infiniband[^NCCL24] | log(Number of nodes)[^marekAllReduce] | 2 \* ModelSize[^marekAllReduce] |
 
 ## Cost
@@ -64,12 +65,13 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 | RTX 3090 | not allowed [^consumerGpuCloud] | 1000$           |
 
 ## GPU Properties
-| Device   | \#SMs | GMEM | bf16 |
-|----------|-------|------|------|
+
+| Device   | \#SMs | GMEM | bf16                         |
+|----------|-------|------|------------------------------|
 | H100     | 132   | 80GB | 1000 TFLOPs [^h100datasheet] |
-| A100     | 108   | 80GB | 300 TFLOPs [^a100datasheet] |
+| A100     | 108   | 80GB | 300 TFLOPs [^a100datasheet]  |
 | A6000    | 84    | 48GB | 300 TFLOPs [^a6000datasheet] |
-| RTX 3090 | 82    | 24GB | 70 TFLOPs [^rtx3090perf] |
+| RTX 3090 | 82    | 24GB | 70 TFLOPs [^rtx3090perf]     |
 
 ## LLMs
 

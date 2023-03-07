@@ -1,5 +1,4 @@
-remote_theme: pages-themes/primer@v0.2.0
+remote_theme: pages-themes/primer
 plugins:
 - jekyll-remote-theme
-title: GPU Napkin Math Numbers
-description: Numbers for back of the envelope calculations. Off by more than 20%? Submit a PR here: [https://github.com/siboehm/GPU-napkin-math](https://github.com/siboehm/GPU-napkin-math)
+title: GPU Napkin Math
