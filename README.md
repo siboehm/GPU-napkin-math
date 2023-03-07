@@ -22,6 +22,8 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 
 Any number is off by more than 25%? Create a PR at [https://github.com/siboehm/GPU-napkin-math](https://github.com/siboehm/GPU-napkin-math)!
 
+For non-GPU napkin math: https://github.com/sirupsen/napkin-math
+
 ## Compute
 
 | What               | Latency |
