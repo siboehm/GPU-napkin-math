@@ -20,6 +20,8 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 
 # GPU latency numbers that a small number of people might profit from being able to look up quickly
 
+Any number is off by more than 25%? Create a PR at [https://github.com/siboehm/GPU-napkin-math](https://github.com/siboehm/GPU-napkin-math)!
+
 ## Compute
 
 | What               | Latency |
