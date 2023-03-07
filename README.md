@@ -10,7 +10,6 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 - common GPU utilization
 - Look at Lennart's posts again -> How does he estimate the costs?
 - AI and compute -> How did they count the flops?
-- kernel launch latency
 - Can matmul kernels just be approximated with max FLOPs counts?
 - Memory demand for training:
     - parameters 
@@ -19,7 +18,7 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
         - Adam: 2 * parameters
         - SGD: 0
 
-# GPU latency numbers that a very small number of people might profit from being able to look up quickly
+# GPU latency numbers that a small number of people might profit from being able to look up quickly
 
 ## Compute
 
@@ -46,7 +45,7 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 | GPU to CPU               | 16x PCIe 4.0               | 10 μs   | 20 GB/s                  | 75μs      | 50ms  | A100, A6000  |
 | GPU to GPU (same node)   | 4x NVLink 3.0              | 10 μs   | 50 GB/s                  | 25μs      | 20ms  | A6000        |
 | GPU to GPU (same node)   | 12x NVLink 3.0             | 10 μs   | 300 GB/s                 | 25μs      | 5ms   | A100         |
-| GPU to GPU (same node)   | 12x NVLink 4.0             | 10 μs   | 450 GB/s                 | ?         | 2ms   | H100         |
+| GPU to GPU (same node)   | 12x NVLink 4.0             | ?       | 450 GB/s                 | ?         | 2ms   | H100         |
 | GPU to GPU (remote node) | Infiniband                 | ?       | ?                        | ?         | ?     |              |
 | GPU to GPU (remote node) | TCP over 100 GBit Ethernet | ?       | 10 GB/s [^100GbMellanox] | 100μs (?) | 100ms |              |
 | GPU to GPU (remote node) | GPUDirect RDMA             | ?       | ?                        | ?         | ?     |              |
@@ -54,29 +53,30 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 ### MPI
 | Operation        | Latency (8B)   | Latency (theoretical)                 | Bandwidth (theoretical)         |
 |------------------|----------------|---------------------------------------|---------------------------------|
-| AllReduce (NCCL) | 200μs[^NCCL24] | log(Number of nodes)[^marekAllReduce] | 2 \* ModelSize[^marekAllReduce] |
+| AllReduce (NCCL) | 200μs over Infiniband[^NCCL24] | log(Number of nodes)[^marekAllReduce] | 2 \* ModelSize[^marekAllReduce] |
 
 ## Cost
 
-| Device   | Properties                                   | Cost/h (Spot instance)          | Cost (purchase) |
-|----------|----------------------------------------------|---------------------------------|-----------------|
-| A100     | 80GB GMEM, 300 TFLOPs bfloat16               | 5$ [^awsP4],                    | 10.000$         |
-| RTX 3090 | 24GB GMEM, 71 TFLOPs bfloat16 [^rtx3090perf] | not allowed [^consumerGpuCloud] | 1000$           |
+| Device   | Cost/h (Spot instance)          | Cost (purchase) |
+|----------|---------------------------------|-----------------|
+| H100     | ?                               | 30,000$         |
+| A100     | 5$ [^awsP4]                     | 10,000$         |
+| RTX 3090 | not allowed [^consumerGpuCloud] | 1000$           |
 
 ## GPU Properties
-| Device   | \#SMs |
-|----------|-------|
-| H100     | 132   |
-| A100     | 108   |
-| A6000    | 84    |
-| RTX 3090 | 82    |
+| Device   | \#SMs | GMEM | bf16 |
+|----------|-------|------|------|
+| H100     | 132   | 80GB | 1000 TFLOPs [^h100datasheet] |
+| A100     | 108   | 80GB | 300 TFLOPs [^a100datasheet] |
+| A6000    | 84    | 48GB | 300 TFLOPs [^a6000datasheet] |
+| RTX 3090 | 82    | 24GB | 70 TFLOPs [^rtx3090perf] |
 
 ## LLMs
 
 | Metric                                  | Value                   |
 |-----------------------------------------|-------------------------|
 | Latency (ChatGPT-esque system)          | 500 to 1000 WPM         |
-| OpenAI API cost per 1K tokens (~1 page) | 0,01 $ [^openaiPricing] |
+| OpenAI API cost per 1K tokens (~1 page) | 0.001$ [^openaiPricing] |
 | Tokens per word                         | 1                       |
 
 ## Further info
@@ -95,4 +95,7 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 [^100GbMellanox]: [https://www.microway.com/knowledge-center-articles/performance-characteristics-of-common-network-fabrics/](https://www.microway.com/knowledge-center-articles/performance-characteristics-of-common-network-fabrics/)
 [^NCCL24]: [https://developer.nvidia.com/blog/massively-scale-deep-learning-training-nccl-2-4/](https://developer.nvidia.com/blog/massively-scale-deep-learning-training-nccl-2-4/)
 [^marekAllReduce]: [https://marek.ai/allreduce-the-basis-of-multi-device-communication-for-neural-network-training.html](https://marek.ai/allreduce-the-basis-of-multi-device-communication-for-neural-network-training.html)
+[^a6000datasheet]: [https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/quadro-product-literature/proviz-print-nvidia-rtx-a6000-datasheet-us-nvidia-1454980-r9-web%20(1).pdf](https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/quadro-product-literature/proviz-print-nvidia-rtx-a6000-datasheet-us-nvidia-1454980-r9-web%20(1).pdf)
+[^a100datasheet]: [https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf](https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf)
+[^h100datasheet]: [https://www.nvidia.com/en-us/data-center/h100/](https://www.nvidia.com/en-us/data-center/h100/)
 
