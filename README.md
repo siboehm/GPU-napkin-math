@@ -4,7 +4,13 @@ See https://gist.github.com/eshelman/343a1c46cb3fba142c1afdcdeec17646
 
 Also: https://github.com/te42kyfo/cuda-benches
 
+- 
+
 https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
+
+- Ampere Microbenchmarks: https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s33322/
+    - paper doesn't seem to exist, but https://ieeexplore.ieee.org/abstract/document/9926299?casa_token=e6Ldl_Sqg9gAAAAA:n4Btu4Mj01Au5_FUVcowBYh6jQ4pnv1mxH2ZDbsg7skxrUdgV-ZXa0R1_EQK_7d1t9jjIsf8xnRj is in the same vein 
+	
 
 - FLOPS / parameter
 - common GPU utilization
@@ -20,7 +26,7 @@ https://github.com/stas00/toolbox/blob/master/pytorch/all_reduce_bench.py
 
 # GPU latency numbers that a small number of people might profit from being able to look up quickly
 
-Any number is off by more than 25%? Create a PR at [https://github.com/siboehm/GPU-napkin-math](https://github.com/siboehm/GPU-napkin-math)!
+Any metric is widely off? Create a PR at [https://github.com/siboehm/GPU-napkin-math](https://github.com/siboehm/GPU-napkin-math)!
 
 For non-GPU napkin math: https://github.com/sirupsen/napkin-math
 
@@ -36,11 +42,12 @@ For non-GPU napkin math: https://github.com/sirupsen/napkin-math
 
 ### Memory
 
-| Device               | Latency | Throughput (sequential access) | 1MB  | 1GB  | Example device  |
-|----------------------|---------|--------------------------------|------|------|-----------------|
-| CPU RAM to Register  |         | 35 GB/s [^sirupsenNapkin]      | 30μs | 30ms |                 |
-| GPU GMEM to Register |         | 700 GB/s                       |      |      | A6000, RTX 3090 |
-| GPU GMEM to Register |         | 2 TB/s                         |      |      | A100 SXM        |
+| Device                   | Latency                   | Throughput (sequential access) | 1MB  | 1GB  | Example device  |
+|--------------------------|---------------------------|--------------------------------|------|------|-----------------|
+| CPU RAM to Register      |                           | 35 GB/s [^sirupsenNapkin]      | 30μs | 30ms |                 |
+| GPU GMEM to Register     |                           | 700 GB/s                       |      |      | A6000, RTX 3090 |
+| GPU GMEM to Register     |                           | 2 TB/s                         |      |      | A100 SXM        |
+| GPU L2 cache to Register | 200ns [^dissectingAmpere] |                                |      |      | Ampere          |
 
 ### Interconnect
 
@@ -56,9 +63,9 @@ For non-GPU napkin math: https://github.com/sirupsen/napkin-math
 
 ### MPI
 
-| Operation        | Latency (8B)                   | Latency (theoretical)                 | Bandwidth (theoretical)         |
-|------------------|--------------------------------|---------------------------------------|---------------------------------|
-| AllReduce (NCCL) | 200μs over Infiniband[^NCCL24] | log(Number of nodes)[^marekAllReduce] | 2 \* ModelSize[^marekAllReduce] |
+| Operation        | Latency (8B)                   | Latency (theoretical)                 | Per node transfer size (theoretical)                                     |
+|------------------|--------------------------------|---------------------------------------|--------------------------------------------------------------------------|
+| AllReduce (NCCL) | 200μs over Infiniband[^NCCL24] | log(Number of nodes)[^marekAllReduce] | 2 \* (\#nodes-1)/\#nodes \* modelsize[^marekAllReduce][^NCCLPerformance] |
 
 ## Cost
 
@@ -104,4 +111,6 @@ For non-GPU napkin math: https://github.com/sirupsen/napkin-math
 [^a6000datasheet]: [https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/quadro-product-literature/proviz-print-nvidia-rtx-a6000-datasheet-us-nvidia-1454980-r9-web%20(1).pdf](https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/quadro-product-literature/proviz-print-nvidia-rtx-a6000-datasheet-us-nvidia-1454980-r9-web%20(1).pdf)
 [^a100datasheet]: [https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf](https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/a100/pdf/nvidia-a100-datasheet-us-nvidia-1758950-r4-web.pdf)
 [^h100datasheet]: [https://www.nvidia.com/en-us/data-center/h100/](https://www.nvidia.com/en-us/data-center/h100/)
+[^dissectingAmpere]: [https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s33322/](https://www.nvidia.com/en-us/on-demand/session/gtcspring21-s33322/)
+[^NCCLPerformance]: [https://github.com/NVIDIA/nccl-tests/blob/master/doc/PERFORMANCE.md](https://github.com/NVIDIA/nccl-tests/blob/master/doc/PERFORMANCE.md)
 
